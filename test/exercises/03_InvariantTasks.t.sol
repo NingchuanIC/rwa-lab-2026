@@ -17,11 +17,10 @@ import {RedemptionQueue} from "../../src/exercises/RedemptionQueue.sol";
 ///         still hold?" That is how a bridge should be tested — you will never guess the order
 ///         an attacker does things in.
 ///
-///         Acceptance: make exercise (it should be red until you are finished)
+///         Acceptance: make exercise
 ///
-/// @dev Ex6 depends on Ex5: the handler below calls enqueue / settle / claim, which are the
-///      four functions you implement in RedemptionQueue.sol. Finish Ex5 first, or the fuzzer
-///      will only ever see reverts.
+/// @dev The handler exercises Ex5 through bounded valid actions. A separate lifecycle test
+///      verifies that enqueue, settle and claim reach meaningful state changes.
 ///
 ///      How it works: Foundry picks a function from the handler at random, picks random
 ///      arguments, calls it, and repeats N times; after each round it runs every invariant_*
@@ -83,28 +82,41 @@ contract BridgeHandler is Test {
         vault.depositReserves(amount);
     }
 
-    /// TODO Ex6.1 — implement enqueue
-    /// @dev Steps:
-    ///       1) pick one user at random (a user may hold 0 tBILL — if so, return early)
-    ///       2) bound the shares to [1, that user's tBILL balance]
-    ///       3) call queue.enqueue(shares) as that user
-    ///       4) do not forget the approval — enqueue pulls the shares in with transferFrom
-    ///      Hint: the two parameters have no names yet. Name them first.
-    function enqueue(uint256, uint256) external {}
+    /// @dev Escrow a bounded position owned by one of the KYC'd users.
+    function enqueue(uint256 userSeed, uint256 shares) external {
+        address user = users[bound(userSeed, 0, users.length - 1)];
+        uint256 balance = tBill.balanceOf(user);
+        if (balance == 0) return;
+        shares = bound(shares, 1, balance);
 
-    /// TODO Ex6.2 — implement settle
-    /// @dev Steps:
-    ///       1) bound `assets` to [1, vault.reserveBalance()] (return early if the vault is empty)
-    ///       2) call queue.settle(assets)
-    ///      Settling with less cash than the head ticket needs is legal — it simply pays nothing.
-    function settle(uint256) external {}
+        vm.startPrank(user);
+        tBill.approve(address(queue), shares);
+        queue.enqueue(shares);
+        vm.stopPrank();
+        ++ghost_enqueues;
+    }
 
-    /// TODO Ex6.3 — implement claim
-    /// @dev Steps:
-    ///       1) pick one user at random
-    ///       2) if that user has nothing claimable, return early
-    ///       3) call queue.claim() as that user
-    function claim(uint256) external {}
+    /// @dev A successful call with an insufficient budget need not settle any tickets.
+    function settle(uint256 assets) external {
+        uint256 reserves = vault.reserveBalance();
+        if (reserves == 0) return;
+        assets = bound(assets, 1, reserves);
+
+        uint256 previousHead = queue.head();
+        queue.settle(assets);
+        // A dust ticket can advance the head even though its rounded payout is zero.
+        if (queue.head() > previousHead) ++ghost_settles;
+    }
+
+    /// @dev Only call claim when this user has a settled payout to collect.
+    function claim(uint256 userSeed) external {
+        address user = users[bound(userSeed, 0, users.length - 1)];
+        if (queue.claimable(user) == 0) return;
+
+        vm.prank(user);
+        queue.claim();
+        ++ghost_claims;
+    }
 }
 
 contract InvariantTasksTest is Test {
@@ -135,6 +147,8 @@ contract InvariantTasksTest is Test {
         compliance.setWhitelisted(address(queue), true);
 
         handler = new BridgeHandler(usdc, tBill, vault, queue);
+        // Give fundVault a real balance so the invariant campaign explores reserve top-ups.
+        usdc.faucet(address(handler), 300_000e6);
 
         for (uint256 i; i < 3; ++i) {
             compliance.setWhitelisted(handler.users(i), true);
@@ -157,24 +171,104 @@ contract InvariantTasksTest is Test {
         targetContract(address(handler));
     }
 
-    /// TODO Ex6.4 — escrow conservation (plank c)
-    /// @dev The queue holds exactly the shares it still owes a payout for. It never loses one
-    ///      and never invents one. The assertion below is wrong on purpose (it asserts a
-    ///      constant 1), which is why it goes red. Turn it into the property you want.
+    /// @dev Compare escrow with the actual ticket ledger, as well as its cached totals.
+    ///      Scope: the six handler actions never transfer shares directly to the queue.
+    ///      Unsolicited share donations would make escrow exceed pending shares instead.
     function invariant_EscrowConservation() public view {
-        assertEq(tBill.balanceOf(address(queue)), 1, "TODO Ex6.4");
+        uint256 outstandingShares;
+        uint256 outstandingAssets;
+        uint256 length = queue.queueLength();
+        uint256 head = queue.head();
+        assertLe(head, length, "head must remain inside the ticket ledger");
+
+        for (uint256 i; i < length; ++i) {
+            RedemptionQueue.Request memory request = queue.requestAt(i);
+            if (i < head) {
+                assertTrue(request.settled, "every ticket before head must be settled");
+            } else {
+                assertFalse(request.settled, "FIFO forbids settling tickets after head");
+                outstandingShares += request.shares;
+                outstandingAssets += request.assetsLocked;
+            }
+        }
+
+        assertEq(queue.pendingShares(), outstandingShares, "pending shares must match tickets");
+        assertEq(queue.pendingAssets(), outstandingAssets, "pending assets must match tickets");
+        assertEq(
+            tBill.balanceOf(address(queue)), outstandingShares, "escrow must back unsettled tickets"
+        );
     }
 
-    /// TODO Ex6.5 — settlement solvency (plank c)
-    /// @dev The queue never owes settled cash it does not hold: it pays at least what the
-    ///      claimable balances add up to. The assertion below is deliberately false.
-    ///
-    ///      Then ask yourself why nobody can write the more tempting invariant:
-    ///        vault.reserveBalance() >= queue.pendingAssets()
-    ///      Hint: when the NAV rises, where does the extra value physically sit? Is it in the
-    ///      vault's USDC buffer, or in the T-Bills at the custodian? That gap is the whole
-    ///      lesson of this lab — write your answer up as question C1.
+    /// @dev Settled obligations are fully backed by cash already held by the queue.
+    ///      Only the handler's three users can enqueue in this campaign, so this sum
+    ///      includes every possible claimant. It says nothing about off-chain backing.
     function invariant_SettlementSolvency() public view {
-        assertEq(usdc.balanceOf(address(queue)), 1, "TODO Ex6.5");
+        uint256 claimableAssets;
+        for (uint256 i; i < 3; ++i) {
+            claimableAssets += queue.claimable(handler.users(i));
+        }
+
+        assertEq(
+            queue.totalClaimable(), claimableAssets, "claimable total must match user balances"
+        );
+        assertGe(
+            usdc.balanceOf(address(queue)), queue.totalClaimable(), "settled payouts must be funded"
+        );
+    }
+
+    /// @dev Explicitly exercise each handler action so idle guards cannot make Ex6 pass alone.
+    function test_Ex6_HandlerExecutesTheRedemptionLifecycle() public {
+        handler.enqueue(0, 1e18);
+        handler.settle(1e6);
+        handler.claim(0);
+        assertEq(handler.ghost_enqueues(), 0);
+        assertEq(handler.ghost_settles(), 0);
+        assertEq(handler.ghost_claims(), 0);
+
+        handler.subscribe(0, 1000e6);
+        handler.subscribe(1, 1000e6);
+        handler.attest(2e8);
+        handler.enqueue(0, 300e18);
+        handler.enqueue(1, 500e18);
+        assertEq(handler.ghost_enqueues(), 2);
+        assertEq(queue.pendingShares(), 800e18);
+        assertEq(queue.pendingAssets(), 1600e6);
+
+        // Later NAV changes cannot alter either ticket's locked payout.
+        handler.attest(0.5e8);
+        handler.settle(599e6);
+        assertEq(queue.head(), 0);
+        assertEq(handler.ghost_settles(), 0);
+        invariant_EscrowConservation();
+        invariant_SettlementSolvency();
+
+        handler.settle(600e6);
+        assertEq(queue.head(), 1);
+        assertEq(queue.claimable(handler.users(0)), 600e6);
+        handler.claim(0);
+        assertEq(usdc.balanceOf(handler.users(0)), 99_600e6);
+        assertEq(queue.totalClaimable(), 0);
+
+        uint256 reservesBefore = vault.reserveBalance();
+        handler.fundVault(123e6);
+        assertEq(vault.reserveBalance(), reservesBefore + 123e6);
+        handler.settle(1000e6);
+        assertEq(queue.claimable(handler.users(1)), 1000e6);
+        invariant_EscrowConservation();
+        invariant_SettlementSolvency();
+        handler.claim(1);
+
+        // An empty claim or queue does not inflate the successful action counters.
+        handler.claim(0);
+        handler.settle(1e6);
+        assertEq(handler.ghost_settles(), 2);
+        assertEq(handler.ghost_claims(), 2);
+        assertEq(usdc.balanceOf(handler.users(1)), 100_000e6);
+        assertEq(queue.head(), queue.queueLength());
+        assertEq(queue.pendingShares(), 0);
+        assertEq(queue.pendingAssets(), 0);
+        assertEq(queue.totalClaimable(), 0);
+        invariant_EscrowConservation();
+        invariant_SettlementSolvency();
     }
 }

