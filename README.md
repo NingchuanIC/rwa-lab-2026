@@ -132,6 +132,20 @@ The bridge has four planks. Each one is a contract or a role in this repo.
 | `src/exercises/MockPriceFeed.sol` | **The NAV oracle.** 8 decimals; `1.00e8` is par | (b) attestation |
 | `src/exercises/RedemptionQueue.sol` | **T+1.** Shares in, a queue ticket out, cash later — **your TODOs, Ex5** | (c) redemption |
 
+### Architecture diagram
+
+The four bridge planks are marked (a)-(d). Solid arrows show USDC or tBILL movements;
+dashed arrows show contract calls, checks, reports, or off-chain steps.
+
+![Architecture of the tokenized T-Bill bridge](docs/architecture.png)
+
+[Editable SVG version](docs/architecture.svg)
+
+The custodian contract is a reported record of off-chain assets. Sale proceeds are supplied
+by the SPV/operator through `depositReserves()`; `recordSale()` only updates the holdings record.
+Shares enter escrow at enqueue, are burned at settlement, and the investor claims the funded USDC afterwards.
+
+
 ### The two invariants you will defend (Ex6)
 
 ```
@@ -167,6 +181,24 @@ The deploy prints them in this order: `MockUSDC`, `ComplianceRegistry`, `MockPri
 **Tier 3 (challenge, optional)** — **Ex7**: `make challenge` (`test/challenges/FalseNav.t.sol`). The
 reporter's number is the chain's only window onto the asset; show what happens when it lies, and
 name the mechanism that would have caught it.
+
+---
+
+## Deployment (Sepolia)
+
+Network: Ethereum Sepolia (chain ID: `11155111`).
+
+All seven contracts were deployed successfully. Etherscan shows three Exact Matches and four Similar Matches, as checked on 16 October 2026 (UTC+8). Similar Match links the contract to existing verified source code but does not verify this deployment's constructor arguments. The deployment also completed the role grants, queue registration, and whitelist setup.
+
+| Contract | Address | Verification | Source |
+|---|---|---|---|
+| MockUSDC | `0xEDC0469ECc0E3d4B6Db6F4f4B29992a8E775BF2C` | Similar Match | [Etherscan](https://sepolia.etherscan.io/address/0xEDC0469ECc0E3d4B6Db6F4f4B29992a8E775BF2C#code) |
+| ComplianceRegistry | `0x595328624b24434653E8dF5b734939d9B35c489D` | Similar Match | [Etherscan](https://sepolia.etherscan.io/address/0x595328624b24434653E8dF5b734939d9B35c489D#code) |
+| MockPriceFeed | `0xf4b5711fE5AC92900e3758E2D2BD85e3C800B4c1` | Similar Match | [Etherscan](https://sepolia.etherscan.io/address/0xf4b5711fE5AC92900e3758E2D2BD85e3C800B4c1#code) |
+| TBillToken | `0x729d0285AD14D73E098F0f6aBeD0804678f650E7` | Exact Match | [Etherscan](https://sepolia.etherscan.io/address/0x729d0285AD14D73E098F0f6aBeD0804678f650E7#code) |
+| MockTBillCustodian | `0x951362Da66AbE982a11CE77c68AA1f393E86567B` | Similar Match | [Etherscan](https://sepolia.etherscan.io/address/0x951362Da66AbE982a11CE77c68AA1f393E86567B#code) |
+| TBillVault | `0x13Ec2f09a6603de90D07Fe00f8B944E82bF3f1Da` | Exact Match | [Etherscan](https://sepolia.etherscan.io/address/0x13Ec2f09a6603de90D07Fe00f8B944E82bF3f1Da#code) |
+| RedemptionQueue | `0x156BBBFd59862Aa04c05ff46c215D5227D55aC91` | Exact Match | [Etherscan](https://sepolia.etherscan.io/address/0x156BBBFd59862Aa04c05ff46c215D5227D55aC91#code) |
 
 ---
 

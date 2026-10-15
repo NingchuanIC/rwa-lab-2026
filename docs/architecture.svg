@@ -1,0 +1,165 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2000" height="1320" viewBox="0 0 2000 1320">
+<title>RWA tokenization lab architecture</title>
+<desc>Four bridge planks: custody, attestation, redemption and admission. Solid arrows show cash and shares; dashed arrows show calls, reports and off-chain steps.</desc>
+<rect width="100%" height="100%" fill="white"/>
+<text x="1000" y="38" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="32" font-weight="700" fill="#111">RWA Tokenization Lab - Architecture</text>
+<text x="1000" y="80" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="22" font-weight="400" fill="#111">Solid arrows = USDC or tBILL movement  |  Dashed arrows = calls, checks, reports or off-chain steps</text>
+<polyline points="30,120 1650,120 1650,1170 30,1170 30,120" fill="none" stroke="#222222" stroke-width="2" stroke-dasharray="7 6"/>
+<polyline points="1690,120 1970,120 1970,1170 1690,1170 1690,120" fill="none" stroke="#222222" stroke-width="2" stroke-dasharray="7 6"/>
+<rect x="71" y="103.14" width="208" height="33.72" fill="white"/>
+<text x="175" y="120" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="21" font-weight="700" fill="#111">On-chain / local lab</text>
+<text x="1830" y="142" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="24" font-weight="700" fill="#111">Off-chain</text>
+<text x="245" y="145" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="23" font-weight="700" fill="#111">(d) Admission</text>
+<rect x="70" y="170" width="350" height="120" fill="white"/>
+<polyline points="70,170 420,170 420,290 70,290 70,170" fill="none" stroke="#222222" stroke-width="2"/>
+<rect x="71" y="171" width="348" height="44" fill="#eeeeee"/>
+<polyline points="70,215 420,215" fill="none" stroke="#222222" stroke-width="2"/>
+<text x="245" y="193" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="25" font-weight="700" fill="#111">ComplianceRegistry</text>
+<text x="245" y="238.64" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="21" font-weight="400" fill="#111">Compliance team: whitelist</text>
+<text x="245" y="266.36" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="21" font-weight="400" fill="#111">COMPLIANCE_ROLE</text>
+<rect x="70" y="390" width="350" height="130" fill="white"/>
+<polyline points="70,390 420,390 420,520 70,520 70,390" fill="none" stroke="#222222" stroke-width="2"/>
+<rect x="71" y="391" width="348" height="44" fill="#eeeeee"/>
+<polyline points="70,435 420,435" fill="none" stroke="#222222" stroke-width="2"/>
+<text x="245" y="413" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="26" font-weight="700" fill="#111">TBillToken</text>
+<text x="245" y="452.42" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="19" font-weight="400" fill="#111">tBILL shares: 18 decimals</text>
+<text x="245" y="477.5" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="19" font-weight="400" fill="#111">Checks both nonzero endpoints</text>
+<text x="245" y="502.58" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="19" font-weight="400" fill="#111">on transfer, mint and burn</text>
+<rect x="70" y="610" width="350" height="240" fill="white"/>
+<polyline points="70,610 420,610 420,850 70,850 70,610" fill="none" stroke="#222222" stroke-width="2"/>
+<rect x="71" y="611" width="348" height="44" fill="#eeeeee"/>
+<polyline points="70,655 420,655" fill="none" stroke="#222222" stroke-width="2"/>
+<text x="245" y="633" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="25" font-weight="700" fill="#111">Investor / KYC wallet</text>
+<text x="245" y="722.14" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="23" font-weight="400" fill="#111">Holds USDC and tBILL</text>
+<text x="245" y="752.5" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="23" font-weight="400" fill="#111">Receives a queue ticket</text>
+<text x="245" y="782.86" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="23" font-weight="400" fill="#111">Claims cash after settlement</text>
+<text x="940" y="145" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="23" font-weight="700" fill="#111">(b) Attestation</text>
+<rect x="720" y="170" width="440" height="155" fill="white"/>
+<polyline points="720,170 1160,170 1160,325 720,325 720,170" fill="none" stroke="#222222" stroke-width="2"/>
+<rect x="721" y="171" width="438" height="44" fill="#eeeeee"/>
+<polyline points="720,215 1160,215" fill="none" stroke="#222222" stroke-width="2"/>
+<text x="940" y="193" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="26" font-weight="700" fill="#111">MockPriceFeed</text>
+<text x="940" y="242.28" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="21" font-weight="400" fill="#111">NAV per share: 8 decimals</text>
+<text x="940" y="270" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="21" font-weight="400" fill="#111">Reporter updates through Vault.attest()</text>
+<text x="940" y="297.72" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="21" font-weight="400" fill="#111">USDC = shares x NAV / 10^20</text>
+<rect x="720" y="600" width="440" height="180" fill="white"/>
+<polyline points="720,600 1160,600 1160,780 720,780 720,600" fill="none" stroke="#222222" stroke-width="2"/>
+<rect x="721" y="601" width="438" height="44" fill="#eeeeee"/>
+<polyline points="720,645 1160,645" fill="none" stroke="#222222" stroke-width="2"/>
+<text x="940" y="623" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="27" font-weight="700" fill="#111">TBillVault</text>
+<text x="940" y="668.94" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="22" font-weight="400" fill="#111">subscribe(): cash in, shares priced</text>
+<text x="940" y="697.98" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="22" font-weight="400" fill="#111">attest(): REPORTER_ROLE</text>
+<text x="940" y="727.02" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="22" font-weight="400" fill="#111">invest() / depositReserves()</text>
+<text x="940" y="756.06" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="22" font-weight="400" fill="#111">OPERATOR_ROLE</text>
+<text x="825" y="907" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="23" font-weight="700" fill="#111">(c) Redemption</text>
+<rect x="720" y="930" width="440" height="210" fill="white"/>
+<polyline points="720,930 1160,930 1160,1140 720,1140 720,930" fill="none" stroke="#222222" stroke-width="2"/>
+<rect x="721" y="931" width="438" height="44" fill="#eeeeee"/>
+<polyline points="720,975 1160,975" fill="none" stroke="#222222" stroke-width="2"/>
+<text x="940" y="953" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="26" font-weight="700" fill="#111">RedemptionQueue</text>
+<text x="940" y="1015.92" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="21" font-weight="400" fill="#111">enqueue(): escrow shares, lock NAV</text>
+<text x="940" y="1043.64" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="21" font-weight="400" fill="#111">settle(): FIFO, fund cash, burn tBILL</text>
+<text x="940" y="1071.36" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="21" font-weight="400" fill="#111">claim(): pay funded USDC</text>
+<text x="940" y="1099.08" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="21" font-weight="400" fill="#111">SETTLER_ROLE controls settle()</text>
+<text x="1485" y="577" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="23" font-weight="700" fill="#111">(a) Custody</text>
+<rect x="1350" y="600" width="270" height="180" fill="white"/>
+<polyline points="1350,600 1620,600 1620,780 1350,780 1350,600" fill="none" stroke="#222222" stroke-width="2"/>
+<rect x="1351" y="601" width="268" height="44" fill="#eeeeee"/>
+<polyline points="1350,645 1620,645" fill="none" stroke="#222222" stroke-width="2"/>
+<text x="1485" y="623" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#111">MockTBillCustodian</text>
+<text x="1485" y="687.42" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="19" font-weight="400" fill="#111">Reported holdings only</text>
+<text x="1485" y="712.5" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="19" font-weight="400" fill="#111">realHoldings(): 6 decimals</text>
+<text x="1485" y="737.58" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="19" font-weight="400" fill="#111">recordPurchase / recordSale</text>
+<rect x="1350" y="170" width="270" height="155" fill="white"/>
+<polyline points="1350,170 1620,170 1620,325 1350,325 1350,170" fill="none" stroke="#222222" stroke-width="2"/>
+<rect x="1351" y="171" width="268" height="44" fill="#eeeeee"/>
+<polyline points="1350,215 1620,215" fill="none" stroke="#222222" stroke-width="2"/>
+<text x="1485" y="193" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="26" font-weight="700" fill="#111">MockUSDC</text>
+<text x="1485" y="256.8" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="20" font-weight="400" fill="#111">Cash token: 6 decimals</text>
+<text x="1485" y="283.2" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="20" font-weight="400" fill="#111">Used on all USDC arrows</text>
+<text x="1485" y="367.28" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="21" font-weight="400" fill="#111">Reported NAV and holdings</text>
+<text x="1485" y="395" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="21" font-weight="400" fill="#111">do not prove that the</text>
+<text x="1485" y="422.72" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="21" font-weight="400" fill="#111">real T-Bills exist.</text>
+<rect x="1720" y="170" width="220" height="260" fill="white"/>
+<polyline points="1720,170 1940,170 1940,430 1720,430 1720,170" fill="none" stroke="#222222" stroke-width="2"/>
+<rect x="1721" y="171" width="218" height="44" fill="#eeeeee"/>
+<polyline points="1720,215 1940,215" fill="none" stroke="#222222" stroke-width="2"/>
+<text x="1830" y="193" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#111">SPV / custodian</text>
+<text x="1830" y="280.92" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="21" font-weight="400" fill="#111">Real T-Bills</text>
+<text x="1830" y="308.64" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="21" font-weight="400" fill="#111">Legal ownership</text>
+<text x="1830" y="336.36" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="21" font-weight="400" fill="#111">Asset records</text>
+<text x="1830" y="364.08" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="21" font-weight="400" fill="#111">Custody accounts</text>
+<rect x="1720" y="930" width="220" height="210" fill="white"/>
+<polyline points="1720,930 1940,930 1940,1140 1720,1140 1720,930" fill="none" stroke="#222222" stroke-width="2"/>
+<rect x="1721" y="931" width="218" height="44" fill="#eeeeee"/>
+<polyline points="1720,975 1940,975" fill="none" stroke="#222222" stroke-width="2"/>
+<text x="1830" y="953" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#111">SPV / operator</text>
+<text x="1830" y="1017.9" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="20" font-weight="400" fill="#111">Sale proceeds</text>
+<text x="1830" y="1044.3" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="20" font-weight="400" fill="#111">Return as USDC</text>
+<text x="1830" y="1070.7" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="20" font-weight="400" fill="#111">through the vault</text>
+<text x="1830" y="1097.1" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="20" font-weight="400" fill="#111">depositReserves()</text>
+<polyline points="245,290 245,390" fill="none" stroke="#222222" stroke-width="2" stroke-dasharray="7 6"/>
+<polygon points="245,390 250,377 240,377" fill="#222222"/>
+<rect x="287.25" y="311.92" width="85.5" height="56.16" fill="white"/>
+<text x="330" y="327.46" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="19" font-weight="400" fill="#111">Whitelist</text>
+<text x="330" y="352.54" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="19" font-weight="400" fill="#111">check</text>
+<polyline points="720,625 580,625 580,455 420,455" fill="none" stroke="#222222" stroke-width="2" stroke-dasharray="7 6"/>
+<polygon points="420,455 433,460 433,450" fill="#222222"/>
+<rect x="463.258" y="410.8" width="173.484" height="32.4" fill="white"/>
+<text x="550" y="427" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="20" font-weight="400" fill="#111">mint(user, shares)</text>
+<polyline points="245,520 245,610" fill="none" stroke="#222222" stroke-width="2"/>
+<polygon points="245,610 250,597 240,597" fill="#222222"/>
+<rect x="269.5" y="534.92" width="121" height="56.16" fill="white"/>
+<text x="330" y="550.46" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="19" font-weight="400" fill="#111">Minted tBILL</text>
+<text x="330" y="575.54" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="19" font-weight="400" fill="#111">to investor</text>
+<polyline points="420,665 720,665" fill="none" stroke="#222222" stroke-width="2"/>
+<polygon points="720,665 707,660 707,670" fill="#222222"/>
+<rect x="464.25" y="626.14" width="211.5" height="33.72" fill="white"/>
+<text x="570" y="643" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="21" font-weight="400" fill="#111">1. subscribe(): USDC</text>
+<polyline points="940,325 940,600" fill="none" stroke="#222222" stroke-width="2" stroke-dasharray="7 6"/>
+<polygon points="940,600 945,587 935,587" fill="#222222"/>
+<polygon points="940,325 935,338 945,338" fill="#222222"/>
+<rect x="994.5" y="419.28" width="135" height="61.44" fill="white"/>
+<text x="1062" y="436.14" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="21" font-weight="400" fill="#111">Read NAV /</text>
+<text x="1062" y="463.86" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="21" font-weight="400" fill="#111">attest update</text>
+<polyline points="1160,660 1350,660" fill="none" stroke="#222222" stroke-width="2"/>
+<polygon points="1350,660 1337,655 1337,665" fill="#222222"/>
+<rect x="1174" y="620.46" width="162" height="31.08" fill="white"/>
+<text x="1255" y="636" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="19" font-weight="400" fill="#111">2. invest(): USDC</text>
+<polyline points="1720,280 1665,280 1665,660 1620,660" fill="none" stroke="#222222" stroke-width="2" stroke-dasharray="7 6"/>
+<polygon points="1620,660 1633,665 1633,655" fill="#222222"/>
+<rect x="1420.75" y="458.92" width="218.5" height="56.16" fill="white"/>
+<text x="1530" y="474.46" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="19" font-weight="400" fill="#111">Off-chain report</text>
+<text x="1530" y="499.54" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="19" font-weight="400" fill="#111">represented in the mock</text>
+<polyline points="1830,430 1830,930" fill="none" stroke="#222222" stroke-width="2" stroke-dasharray="7 6"/>
+<polygon points="1830,930 1835,917 1825,917" fill="#222222"/>
+<rect x="1753" y="622.4" width="154" height="85.2" fill="white"/>
+<text x="1830" y="638.6" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="20" font-weight="400" fill="#111">Sell T-Bills +</text>
+<text x="1830" y="665" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="20" font-weight="400" fill="#111">bank settlement</text>
+<text x="1830" y="691.4" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="20" font-weight="400" fill="#111">(T+1 process)</text>
+<polyline points="1720,990 1665,990 1665,850 1100,850 1100,780" fill="none" stroke="#222222" stroke-width="2"/>
+<polygon points="1100,780 1095,793 1105,793" fill="#222222"/>
+<rect x="1180.77" y="781.28" width="388.469" height="61.44" fill="white"/>
+<text x="1375" y="798.14" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="21" font-weight="400" fill="#111">USDC sale proceeds</text>
+<text x="1375" y="825.86" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="21" font-weight="400" fill="#111">depositReserves() - OPERATOR_ROLE</text>
+<polyline points="420,760 500,760 500,980 720,980" fill="none" stroke="#222222" stroke-width="2"/>
+<polygon points="720,980 707,975 707,985" fill="#222222"/>
+<rect x="518.25" y="938.8" width="183.5" height="32.4" fill="white"/>
+<text x="610" y="955" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="20" font-weight="400" fill="#111">3. enqueue(): tBILL</text>
+<polyline points="720,1030 480,1030 480,810 420,810" fill="none" stroke="#222222" stroke-width="2" stroke-dasharray="7 6"/>
+<polygon points="420,810 433,815 433,805" fill="#222222"/>
+<rect x="488.004" y="991.46" width="227.992" height="31.08" fill="white"/>
+<text x="602" y="1007" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="19" font-weight="400" fill="#111">Ticket ID + locked payout</text>
+<polyline points="940,780 940,930" fill="none" stroke="#222222" stroke-width="2"/>
+<polygon points="940,930 945,917 935,917" fill="#222222"/>
+<rect x="739.5" y="820.92" width="169" height="56.16" fill="white"/>
+<text x="824" y="836.46" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="19" font-weight="400" fill="#111">4. settle(): USDC</text>
+<text x="824" y="861.54" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="19" font-weight="400" fill="#111">releaseReserves()</text>
+<polyline points="720,1100 245,1100 245,850" fill="none" stroke="#222222" stroke-width="2"/>
+<polygon points="245,850 240,863 250,863" fill="#222222"/>
+<rect x="399.5" y="1060.14" width="171" height="33.72" fill="white"/>
+<text x="485" y="1077" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="21" font-weight="400" fill="#111">5. claim(): USDC</text>
+<text x="1000" y="1210" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="22" font-weight="400" fill="#111">Wiring: Vault + Queue have MINTER_ROLE; Queue is whitelisted; Vault.setQueue(queue); Vault has CUSTODIAN_ROLE.</text>
+<text x="1000" y="1250" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="22" font-weight="400" fill="#111">Queue: full ticket or wait; shares burn at settlement. T+1 depends on cash arrival - there is no enforced one-day timer.</text>
+<text x="1000" y="1286" text-anchor="middle" dominant-baseline="central" font-family="Arial, sans-serif" font-size="21" font-weight="400" fill="#111">The queue reads NAV through the vault only at enqueue. A ticket keeps that payout when NAV changes later.</text>
+</svg>
